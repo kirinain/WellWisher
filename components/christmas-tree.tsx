@@ -23,6 +23,7 @@ interface ChristmasTreeProps {
   showOrnamentSelection?: boolean  // If false, hide the ornament selection box
   lastWishMessage?: string         // Last well wish message to use for ornament message
   isOwnerView?: boolean            // If true, owner can click ornaments to see messages
+  onOrnamentPlaced?: () => void    // Callback when ornament is successfully placed
 }
 
 const CHRISTMAS_ICONS = [
@@ -36,7 +37,7 @@ const CHRISTMAS_ICONS = [
   "star",
 ]
 
-export function ChristmasTree({ userName, userEmail, treeId, showOrnamentSelection = true, lastWishMessage, isOwnerView = false }: ChristmasTreeProps) {
+export function ChristmasTree({ userName, userEmail, treeId, showOrnamentSelection = true, lastWishMessage, isOwnerView = false, onOrnamentPlaced }: ChristmasTreeProps) {
   const [decorations, setDecorations] = useState<Decoration[]>([])
   const [ornaments, setOrnaments] = useState<Ornament[]>([]) // Store full ornaments to check userId
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null)
@@ -152,6 +153,11 @@ export function ChristmasTree({ userName, userEmail, treeId, showOrnamentSelecti
       }))
       setDecorations(decs)
       setSelectedIcon(null)
+      
+      // Notify parent that ornament was placed
+      if (onOrnamentPlaced) {
+        onOrnamentPlaced()
+      }
     } catch (error) {
       console.error("Error adding ornament:", error)
       alert("Failed to add ornament. Please try again.")

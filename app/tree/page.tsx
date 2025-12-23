@@ -10,7 +10,7 @@ import { ChristmasTree } from "@/components/christmas-tree"
 import { WellWishesForm } from "@/components/well-wishes-form"
 import { CreateTreeModal } from "@/components/create-tree-modal"
 import { Button } from "@/components/ui/button"
-import { getTree, signupOrLogin, getTreeShareLink, getUserByTreeId } from "@/app/utils/api"
+import { getTree, signupOrLogin, getTreeShareLink, getUserByTreeId, getOrnaments } from "@/app/utils/api"
 import { useRouter } from "next/navigation"
 
 export default function TreePage() {
@@ -26,6 +26,7 @@ export default function TreePage() {
   const [lastWishMessage, setLastWishMessage] = useState<string>("")
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasUserPlacedOrnament, setHasUserPlacedOrnament] = useState(false)
 
   // Get treeId from URL
   const urlTreeId = searchParams?.get("treeId")
@@ -71,11 +72,31 @@ export default function TreePage() {
         console.error("Error loading tree owner:", ownerError)
         setTreeOwnerName("")
       }
+      
+      // Check if user has placed an ornament
+      await checkUserOrnament(id)
     } catch (error) {
       console.error("Error loading tree info:", error)
       setTreeName("Christmas Tree")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const checkUserOrnament = async (id: string) => {
+    try {
+      const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null
+      if (!userId) {
+        setHasUserPlacedOrnament(false)
+        return
+      }
+      
+      const ornamentsData = await getOrnaments(id)
+      const hasPlaced = ornamentsData.ornaments.some(ornament => ornament.userId === userId)
+      setHasUserPlacedOrnament(hasPlaced)
+    } catch (error) {
+      console.error("Error checking user ornament:", error)
+      setHasUserPlacedOrnament(false)
     }
   }
 
@@ -222,6 +243,7 @@ export default function TreePage() {
               userEmail={userEmail}
               treeId={treeId}
               onWishSaved={(wish) => setLastWishMessage(wish)}
+              hasUserPlacedOrnament={hasUserPlacedOrnament}
             />
           </section>
         )}
@@ -246,6 +268,7 @@ export default function TreePage() {
             showOrnamentSelection={!isOwnerTreeView && shouldShowOrnamentSelection}
             lastWishMessage={lastWishMessage}
             isOwnerView={isOwnerTreeView}
+            onOrnamentPlaced={() => checkUserOrnament(treeId)}
           />
         </section>
 
