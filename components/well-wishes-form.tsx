@@ -42,7 +42,7 @@ export function WellWishesForm({ userName, userEmail, treeId, onSubmitted, onWis
     return (
       <Card className="w-full max-w-md mx-auto bg-white/10 backdrop-blur-md border-2 border-white/20 shadow-xl">
         <CardContent className="pt-6 text-center space-y-4">
-          <div className="text-6xl mb-2">🎉</div>
+          <div className="text-6xl mb-2">🫶</div>
           <h3 className="text-xl font-bold text-white mb-2 drop-shadow-md">Thank You!</h3>
           <p className="text-white/90 drop-shadow-sm">
             Your well wish has been saved! It will be revealed on Christmas night at 12 AM! 🎄✨

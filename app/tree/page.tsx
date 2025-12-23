@@ -279,12 +279,12 @@ export default function TreePage() {
                     Copy
                   </Button>
                 </div>
-                <Button
+                {/* <Button
                   onClick={() => setShowCreateModal(true)}
                   className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
                 >
                   🎄 Create Another Tree 🎄
-                </Button>
+                </Button> */}
               </div>
             </div>
           </section>
