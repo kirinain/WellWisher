@@ -31,7 +31,6 @@ export function CreateTreeModal({ userName, userEmail, onTreeCreated, onClose }:
       const response = await signupOrLogin({
         name: userName,
         email: userEmail.toLowerCase(),
-        treeName: treeName.trim(),
       })
       
       // The API returns the user with treeId and _id
