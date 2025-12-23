@@ -6,53 +6,36 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { addDoc, collection, serverTimestamp } from "firebase/firestore"
-import { db } from "@/lib/firebase"
 
 interface WellWishesFormProps {
   userName: string
   userEmail: string
   treeId: string
   onSubmitted?: () => void
+  onWishSaved?: (wish: string) => void
 }
 
-export function WellWishesForm({ userName, userEmail, treeId, onSubmitted }: WellWishesFormProps) {
+export function WellWishesForm({ userName, userEmail, treeId, onSubmitted, onWishSaved }: WellWishesFormProps) {
   const [wish, setWish] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!wish.trim()) return
 
-    setIsSubmitting(true)
-    try {
-      await addDoc(collection(db, "wellWishes"), {
-        name: userName,
-        email: userEmail,
-        wish: wish.trim(),
-        treeId: treeId,
-        timestamp: serverTimestamp(),
-      })
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem("christmas_hasWished", "true")
-        } catch {
-          // ignore storage errors
-        }
-      }
-      if (onSubmitted) {
-        onSubmitted()
-      } else {
-        setSubmitted(true)
-      }
-      setWish("")
-    } catch (error) {
-      console.error("Error submitting wish:", error)
-      alert("Failed to submit your wish. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+    const trimmedWish = wish.trim()
+
+    // Optimistically update UI and parent immediately so the modal
+    // and ornament message are instant, regardless of backend latency.
+    if (onWishSaved) {
+      onWishSaved(trimmedWish)
     }
+    if (onSubmitted) {
+      onSubmitted()
+    } else {
+      setSubmitted(true)
+    }
+    setWish("")
   }
 
   if (submitted) {
@@ -65,11 +48,9 @@ export function WellWishesForm({ userName, userEmail, treeId, onSubmitted }: Wel
             Your well wish has been saved! It will be revealed on Christmas night at 12 AM! 🎄✨
           </p>
           <div className="pt-2">
-            <Link href="/decorate">
               <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm font-bold px-6 py-2 rounded-lg transition-all duration-300 transform hover:scale-105">
                 🎄 Go decorate the tree
               </Button>
-            </Link>
           </div>
         </CardContent>
       </Card>
@@ -102,10 +83,10 @@ export function WellWishesForm({ userName, userEmail, treeId, onSubmitted }: Wel
           </div>
           <Button
             type="submit"
-            disabled={isSubmitting || !wish.trim()}
+            disabled={!wish.trim()}
             className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm font-bold py-2 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? "Saving..." : "Lock Your Wish! 🎁"}
+            Lock Your Wish! 🎁
           </Button>
         </form>
       </CardContent>

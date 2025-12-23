@@ -54,35 +54,34 @@ export function WishesViewer({ userEmail, treeId = "kiti-tree" }: WishesViewerPr
   }, [userEmail, treeId])
 
   useEffect(() => {
-    // Check if it's Christmas night 12 AM AND user is the owner
+    // Check if it's December 25th, 2025 at exactly 12 AM in user's local timezone AND user is the owner
     const checkTime = () => {
       const now = new Date()
-      const currentYear = now.getFullYear()
-      const currentMonth = now.getMonth() // 0-11, where 11 is December
-      const currentDate = now.getDate()
-      const currentHour = now.getHours()
+      // Use local time so each user sees it unlock at midnight in their own timezone
+      const targetDate = new Date(2025, 11, 25, 0, 0, 0) // December 25, 2025 at 12:00 AM local time
+      const endDate = new Date(2025, 11, 26, 0, 0, 0) // December 26, 2025 at 12:00 AM local time
       
-      // Check if it's December 25th and it's midnight (0:00) or later
-      const isChristmasNight = currentMonth === 11 && currentDate === 25 && currentHour >= 0
+      // Check if current time is exactly at or after December 25th, 2025 12:00 AM local time
+      // But only allow viewing during that specific day (until Dec 26, 2025 12:00 AM local time)
+      const isChristmasDay = now >= targetDate && now < endDate
       
-      // Only allow viewing if user is owner AND it's Christmas night
-      if (isOwner && isChristmasNight) {
+      // Only allow viewing if user is owner AND it's the exact Christmas day
+      if (isOwner && isChristmasDay) {
         setCanView(true)
       } else {
         setCanView(false)
-        // Calculate time until Christmas
-        let christmasDate = new Date(currentYear, 11, 25, 0, 0, 0) // Dec 25, 12:00 AM
+        // Calculate time until December 25th, 2025 12:00 AM local time
+        const timeDiff = targetDate.getTime() - now.getTime()
         
-        // If we're past Christmas this year, check next year
-        if (now > christmasDate) {
-          christmasDate = new Date(currentYear + 1, 11, 25, 0, 0, 0)
+        if (timeDiff > 0) {
+          const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
+          const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
+          setTimeUntil(`${days}d ${hours}h ${minutes}m`)
+        } else {
+          // If we're past December 25th, 2025, wishes are locked forever
+          setTimeUntil("Christmas 2025 has passed")
         }
-
-        const timeDiff = christmasDate.getTime() - now.getTime()
-        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60))
-        setTimeUntil(`${days}d ${hours}h ${minutes}m`)
       }
     }
 
@@ -137,7 +136,7 @@ export function WishesViewer({ userEmail, treeId = "kiti-tree" }: WishesViewerPr
           <div className="text-6xl mb-4">🔒</div>
           <h3 className="text-2xl font-bold text-white mb-4 drop-shadow-md">Wishes Are Locked! 🔒</h3>
           <p className="text-lg text-white/90 mb-2 drop-shadow-sm">
-            The well wishes will be revealed at 12 AM on Christmas night!
+            The well wishes will be revealed at 12 AM on December 25th, 2025!
           </p>
           <p className="text-xl font-bold text-yellow-300 drop-shadow-md">
             Time remaining: {timeUntil}

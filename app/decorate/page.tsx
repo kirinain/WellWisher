@@ -9,11 +9,16 @@ import { ChristmasTree } from "@/components/christmas-tree"
 import { WellWishesForm } from "@/components/well-wishes-form"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { signupOrLogin } from "@/app/utils/api"
+
+// Default tree ID - should match the one in app/page.tsx
+const DEFAULT_TREE_ID = "kiti-tree" // TODO: Replace with actual UUID from backend
 
 export default function DecoratePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [userName, setUserName] = useState("")
   const [userEmail, setUserEmail] = useState("")
+  const [treeId] = useState<string>(DEFAULT_TREE_ID)
 
   useEffect(() => {
     // Check localStorage for saved login
@@ -26,12 +31,23 @@ export default function DecoratePage() {
     }
   }, [])
 
-  const handleLogin = (name: string, email: string) => {
-    setUserName(name)
-    setUserEmail(email)
-    setIsLoggedIn(true)
-    localStorage.setItem("christmas_userName", name)
-    localStorage.setItem("christmas_userEmail", email)
+  const handleLogin = async (name: string, email: string) => {
+    try {
+      // Call signup API
+      const response = await signupOrLogin({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+      })
+      
+      setUserName(response.user.name)
+      setUserEmail(response.user.email)
+      setIsLoggedIn(true)
+      localStorage.setItem("christmas_userName", response.user.name)
+      localStorage.setItem("christmas_userEmail", response.user.email)
+    } catch (error) {
+      console.error("Error during login:", error)
+      alert(error instanceof Error ? error.message : "Failed to login. Please try again.")
+    }
   }
 
   if (!isLoggedIn) {
@@ -86,7 +102,7 @@ export default function DecoratePage() {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <ChristmasTree userName={userName} userEmail={userEmail} />
+          <ChristmasTree userName={userName} userEmail={userEmail} treeId={treeId} />
         </div>
       </div>
     </div>

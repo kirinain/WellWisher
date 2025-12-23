@@ -14,12 +14,9 @@ const fredoka = Fredoka({
 })
 
 export const metadata: Metadata = {
-  title: "🎄 Kiti's Christmas Tree - Decorate & Share Wishes 🎄",
+  title: "🎄 Well wishers - Decorate & Share Wishes 🎄",
   description:
     "Decorate the Christmas tree with your friends and leave secret well wishes that unlock at midnight on Christmas!",
-  icons: {
-    icon: "/assets/kiti-room-logo.png",
-  },
 }
 
 export default function RootLayout({
