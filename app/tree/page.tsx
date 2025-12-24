@@ -272,7 +272,7 @@ export default function TreePage() {
           />
         </section>
 
-          <section className="max-w-4xl mx-auto relative z-20 mt-16 mb-8">
+          {/* <section className="max-w-4xl mx-auto relative z-20 mt-16 mb-8">
             <div className="text-center">
               <div className="bg-white/10 backdrop-blur-md rounded-lg p-8 border-2 border-white/20 shadow-xl">
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 drop-shadow-md">
@@ -302,15 +302,9 @@ export default function TreePage() {
                     Copy
                   </Button>
                 </div>
-                {/* <Button
-                  onClick={() => setShowCreateModal(true)}
-                  className="bg-white/20 hover:bg-white/30 text-white border-white/30 backdrop-blur-sm font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-lg shadow-lg"
-                >
-                  🎄 Create Another Tree 🎄
-                </Button> */}
               </div>
             </div>
-          </section>
+          </section> */}
       </div>
 
       {/* Create Tree Modal */}
